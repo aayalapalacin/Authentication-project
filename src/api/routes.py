@@ -43,7 +43,6 @@ def handle_login():
     password = request.json.get("password", None)
 
     user = User.query.filter_by(email=email).first()
-    print("password!!!!!!!!!!!!!",user.password)
 
     if user is None:
         return jsonify({
@@ -55,7 +54,8 @@ def handle_login():
 
     access_token = create_access_token(identity=email)
     payload = {
-        'token': access_token.decode("utf-8"),
+        'token': access_token,
+        # .decode("utf-8")
         'user': user.serialize()
     }
 
