@@ -59,4 +59,8 @@ def handle_login():
         'user': user.serialize()
     }
 
+
+    # access_token = create_access_token(identity=user.id)
+    # return jsonify({'token': access_token, 'user_id': user.id})
+
     return jsonify(payload), 200
