@@ -1,7 +1,9 @@
 const getState = ({ getStore, getActions, setStore }) => {
+  let backend_url = process.env.BACKEND_URL;
   return {
     store: {
       token: null,
+      user: [],
     },
     actions: {
       // Use getActions to call a function within a fuction
@@ -20,10 +22,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }),
         };
         try {
-          const resp = await fetch(
-            "https://3001-4geeksacade-reactflaskh-i9gmafulgze.ws-us93.gitpod.io/api/token",
-            opts
-          );
+          const resp = await fetch(backend_url + "/api/login", opts);
           if (resp.status !== 200) {
             alert("There has been an error");
             return false;
@@ -37,6 +36,31 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("there has been an error during  log in");
         }
       },
+      signup: async (email, password) => {
+        const opts = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        };
+        try {
+          const resp = await fetch(backend_url + "/api/signup", opts);
+          if (resp.status !== 200) {
+            alert("There has been an error");
+            return false;
+          }
+          const data = await resp.json();
+          console.log(data);
+
+          return true;
+        } catch (error) {
+          console.error("there has been an error during signup");
+        }
+      },
       syncTokenFromLocalStorageStore: () => {
         const token = localStorage.getItem("token");
         console.log("aplication loaded");
@@ -46,41 +70,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       logout: () => {
         localStorage.removeItem("token");
         setStore({ token: null });
-      },
-      getMessage: async () => {
-        try {
-          const store = getStore();
-          const opts = {
-            headers: {
-              Authorization: "Bearer " + store.token,
-            },
-          };
-          // fetching data from the backend
-          const resp = await fetch(
-            "https://3001-4geeksacade-reactflaskh-i9gmafulgze.ws-us93.gitpod.io/api/hello",
-            opts
-          );
-          const data = await resp.json();
-          setStore({ message: data.message });
-          // don't forget to return something, that is how the async resolves
-          return data;
-        } catch (error) {
-          console.log("Error loading message from backend", error);
-        }
-      },
-      changeColor: (index, color) => {
-        //get the store
-        const store = getStore();
-
-        //we have to loop the entire demo array to look for the respective index
-        //and change its color
-        const demo = store.demo.map((elm, i) => {
-          if (i === index) elm.background = color;
-          return elm;
-        });
-
-        //reset the global store
-        setStore({ demo: demo });
       },
     },
   };
