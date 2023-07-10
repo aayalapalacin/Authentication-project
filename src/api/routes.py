@@ -8,6 +8,8 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
 import hashlib
+from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 
 api = Blueprint('api', __name__)
 
@@ -24,29 +26,30 @@ def create_token():
 
 @api.route('/login', methods=['POST'])
 def login():
-    email = request.form['email']
-    password = request.form['password']
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
+    email = request.json.get('email')
+    password = request.json.get('password')
+    expiration = datetime.timedelta(days=3)
     user = User.query.filter_by(email=email).first()
-    if user and user.password == hashed_password:
-        access_token = create_access_token(identity=email)
-        return jsonify(access_token=access_token),200
-    else:
-        return "login failed", 401
-        # Login failed
-
+    if not user:
+        return jsonify("Email/Password are incorrect"),401
+    if not check_password_hash(user.password,password):
+        return jsonify("Email/Password are incorrect"),401
+    
+    access_token = create_access_token(identity=email,expires_delta=expiration)
+    return jsonify(access_token=access_token),200
+    
 @api.route("/signup", methods=["POST"])
 def signup():
-    email = request.json.get("email", None)
     name = request.json.get("name", None)
+    email = request.json.get("email", None)
     password = request.json.get("password", None)
     user = User.query.filter_by(email=email).first()
     if user:
         return jsonify({"msg": "user already exist"}), 401
     new_user = User(
-        email=email,
         name=name,
-        password= hashlib.sha256(password.encode()).hexdigest()
+        email=email,
+        password= generate_password_hash(password)
     )
     db.session.add(new_user)
     db.session.commit()

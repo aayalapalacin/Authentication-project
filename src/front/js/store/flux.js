@@ -1,5 +1,6 @@
 const getState = ({ getStore, getActions, setStore }) => {
   let backend_url = process.env.BACKEND_URL;
+  console.log(backend_url, "backend");
   return {
     store: {
       token: null,
@@ -36,13 +37,14 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("there has been an error during  log in");
         }
       },
-      signup: async (email, password) => {
+      signup: async (name, email, password) => {
         const opts = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            name: name,
             email: email,
             password: password,
           }),
