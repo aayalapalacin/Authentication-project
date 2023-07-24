@@ -5,6 +5,7 @@ import { Router, Link } from "@reach/router";
 import { Home } from "./pages/home";
 import NotFound from "./pages/notFound";
 import { Single } from "./pages/single";
+import User from "./pages/user";
 import injectContext from "./store/appContext";
 
 import { Navbar } from "./component/navbar";
@@ -25,6 +26,7 @@ const Layout = () => {
         <Home path="/home" />
         <Login path="/" />
         <Signup path="/signup" />
+        <User path="/user" />
         <Single path="/single/:theid" />
         <NotFound default />
       </Router>

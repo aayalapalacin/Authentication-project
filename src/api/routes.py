@@ -14,15 +14,15 @@ import datetime
 api = Blueprint('api', __name__)
 
 
-@api.route("/token", methods=["POST"])
-def create_token():
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
-    if email != "test" or password != "test":
-        return jsonify({"msg": "Bad email or password"}), 401
+# @api.route("/token", methods=["POST"])
+# def create_token():
+#     email = request.json.get("email", None)
+#     password = request.json.get("password", None)
+#     if email != "test" or password != "test":
+#         return jsonify({"msg": "Bad email or password"}), 401
 
-    access_token = create_access_token(identity=email)
-    return jsonify(access_token=access_token)
+#     access_token = create_access_token(identity=email)
+#     return jsonify(access_token=access_token)
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -56,10 +56,10 @@ def signup():
     
     return jsonify("user created successfully")
 
-@api.route("/hello", methods=["GET"])
-@jwt_required
-def get_hello():
-    dictionary ={
-        "message": "hello world"
-    }
-    return jsonify(dictionary)
+@api.route("/user", methods=["GET"])
+@jwt_required()
+def get_user():
+    user_email = get_jwt_identity() 
+    print(user_email,"user!!!!!!!!!!!!!")
+    user = User.query.filter_by(email=user_email).first()
+    return jsonify(user.serialize())

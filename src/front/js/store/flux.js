@@ -37,6 +37,22 @@ const getState = ({ getStore, getActions, setStore }) => {
           console.error("there has been an error during  log in");
         }
       },
+      getUser: () => {
+        const opts = {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        };
+        fetch(backend_url + "/api/user", opts)
+          .then((resp) => resp.json())
+          .then((data) => {
+            console.log(data, "get user data");
+            setStore({ user: data });
+          })
+          .catch((err) => console.error(err));
+      },
       signup: async (name, email, password) => {
         const opts = {
           method: "POST",
